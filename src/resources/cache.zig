@@ -8,7 +8,7 @@ pub fn Cache(comptime T: type) type {
     return struct {
         const Self = @This();
 
-        safe_deinit: fn (*@This()) void,
+        safe_deinit: *const fn (*@This()) void,
         resources: std.AutoHashMap(u32, *T),
         allocator: ?std.mem.Allocator = null,
 

@@ -43,7 +43,7 @@ pub const BasicGroup = struct {
         return self.group_data.entity_set.reverseIterator();
     }
 
-    pub fn sort(self: BasicGroup, comptime T: type, context: anytype, comptime lessThan: fn (@TypeOf(context), T, T) bool) void {
+    pub fn sort(self: BasicGroup, comptime T: type, context: anytype, comptime lessThan: *const fn (@TypeOf(context), T, T) bool) void {
         if (T == Entity) {
             self.group_data.entity_set.sort(context, lessThan);
         } else {
@@ -51,7 +51,7 @@ pub const BasicGroup = struct {
             const SortContext = struct {
                 group: BasicGroup,
                 wrapped_context: @TypeOf(context),
-                lessThan: fn (@TypeOf(context), T, T) bool,
+                lessThan: *const fn (@TypeOf(context), T, T) bool,
 
                 fn sort(this: @This(), a: Entity, b: Entity) bool {
                     const real_a = this.group.getConst(T, a);
@@ -233,7 +233,7 @@ pub const OwningGroup = struct {
         return utils.ReverseSliceIterator(Entity).init(self.firstOwnedStorage().set.dense.items[0..self.group_data.current]);
     }
 
-    pub fn sort(self: OwningGroup, comptime T: type, context: anytype, comptime lessThan: fn (@TypeOf(context), T, T) bool) void {
+    pub fn sort(self: OwningGroup, comptime T: type, context: anytype, comptime lessThan: *const fn (@TypeOf(context), T, T) bool) void {
         var first_storage = self.firstOwnedStorage();
 
         if (T == Entity) {
@@ -244,7 +244,7 @@ pub const OwningGroup = struct {
             const SortContext = struct {
                 group: OwningGroup,
                 wrapped_context: @TypeOf(context),
-                lessThan: fn (@TypeOf(context), T, T) bool,
+                lessThan: *const fn (@TypeOf(context), T, T) bool,
 
                 fn sort(this: @This(), a: Entity, b: Entity) bool {
                     const real_a = this.group.getConst(T, a);

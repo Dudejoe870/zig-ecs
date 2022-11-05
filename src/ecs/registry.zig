@@ -422,7 +422,7 @@ pub const Registry = struct {
         return &self.type_store;
     }
 
-    pub fn sort(self: *Registry, comptime T: type, comptime lessThan: fn (void, T, T) bool) void {
+    pub fn sort(self: *Registry, comptime T: type, comptime lessThan: *const fn (void, T, T) bool) void {
         const comp = self.assure(T);
         std.debug.assert(comp.super == 0);
         comp.sort(T, comp.len(), {}, lessThan);
