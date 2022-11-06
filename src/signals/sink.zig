@@ -18,7 +18,7 @@ pub fn Sink(comptime Event: type) type {
             return Self{ .insert_index = owning_signal.calls.items.len };
         }
 
-        pub fn before(self: Self, callback: ?fn (Event) void) Self {
+        pub fn before(self: Self, callback: ?*const fn (Event) void) Self {
             if (callback) |cb| {
                 if (self.indexOf(cb)) |index| {
                     return Self{ .insert_index = index };
