@@ -110,7 +110,7 @@ pub fn Handles(comptime HandleType: type, comptime IndexType: type, comptime Ver
             self.last_destroyed = id;
         }
 
-        pub fn alive(self: Self, handle: HandleType) bool {
+        pub fn alive(self: *Self, handle: HandleType) bool {
             const id = self.extractId(handle);
             return id < self.append_cursor and self.handles[id] == handle;
         }
