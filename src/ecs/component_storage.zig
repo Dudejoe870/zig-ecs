@@ -161,7 +161,7 @@ pub fn ComponentStorage(comptime Component: type, comptime Entity: type) type {
         pub fn remove(self: *Self, entity: Entity) void {
             self.destruction.publish(entity);
             if (!is_empty_struct) {
-                _ = self.instances.swapRemove(self.set.index(entity)) catch unreachable;
+                _ = self.instances.swapRemove(self.set.index(entity));
             }
             self.set.remove(entity);
         }
