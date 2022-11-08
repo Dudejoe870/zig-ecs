@@ -61,15 +61,20 @@ pub const LibType = enum(i32) {
     exe_compiled,
 };
 
-pub fn getPackage(comptime prefix_path: []const u8) std.build.Pkg {
-    return .{
-        .name = "ecs",
-        .path = .{ .path = prefix_path ++ "src/ecs.zig" },
+pub const pkg = std.build.Pkg{
+    .name = "ecs",
+    .source = .{ .path = libPath("/src/ecs.zig") },
+};
+
+fn libPath(comptime suffix: []const u8) []const u8 {
+    if (suffix[0] != '/') @compileError("suffix must be an absolute path");
+    return comptime blk: {
+        const root_dir = std.fs.path.dirname(@src().file) orelse ".";
+        break :blk root_dir ++ suffix;
     };
 }
 
-/// prefix_path is used to add package paths. It should be the the same path used to include this build file
-pub fn linkArtifact(b: *Builder, artifact: *std.build.LibExeObjStep, _: std.build.Target, lib_type: LibType, comptime prefix_path: []const u8) void {
+pub fn link(b: *Builder, step: *std.build.LibExeObjStep, lib_type: LibType) void {
     const build_mode = b.standardReleaseOptions();
     switch (lib_type) {
         .static => {
@@ -77,17 +82,15 @@ pub fn linkArtifact(b: *Builder, artifact: *std.build.LibExeObjStep, _: std.buil
             lib.setBuildMode(build_mode);
             lib.install();
 
-            artifact.linkLibrary(lib);
+            step.linkLibrary(lib);
         },
         .dynamic => {
             const lib = b.addSharedLibrary("ecs", "ecs.zig", .unversioned);
             lib.setBuildMode(build_mode);
             lib.install();
 
-            artifact.linkLibrary(lib);
+            step.linkLibrary(lib);
         },
         else => {},
     }
-
-    artifact.addPackage(getPackage(prefix_path));
 }
