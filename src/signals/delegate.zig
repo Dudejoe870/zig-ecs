@@ -13,20 +13,21 @@ pub fn Delegate(comptime Event: type) type {
 
         /// sets a bound function as the Delegate callback
         pub fn initBound(ctx: anytype, comptime callback: anytype) Self {
+            const T = @TypeOf(ctx);
+
             std.debug.assert(@typeInfo(@TypeOf(ctx)) == .Pointer);
             std.debug.assert(@typeInfo(@TypeOf(callback)) == .Fn);
+            std.debug.assert(@typeInfo(@TypeOf(callback)).Fn.args[0].arg_type.? == T);
             std.debug.assert(@ptrToInt(ctx) != 0);
 
-            const T = @TypeOf(ctx);
             return Self{
                 .ctx_ptr_address = @ptrToInt(ctx),
                 .callback = .{
                     .bound = struct {
                         fn cb(self: usize, param: Event) void {
-                            switch (@typeInfo(@TypeOf(callback)).Fn.args[0].arg_type.?) {
-                                *T => @call(.{ .modifier = .always_inline }, callback, .{ @intToPtr(T, self), param }),
-                                T => @call(.{ .modifier = .always_inline }, callback, .{ @intToPtr(T, self).*, param }),
-                                else => @compileError("First argument has to be either a pointer to the type, or the type itself for bound Delegates.")
+                            switch (@typeInfo(@typeInfo(@TypeOf(callback)).Fn.args[0].arg_type.?)) {
+                                .Pointer => @call(.{ .modifier = .always_inline }, callback, .{ @intToPtr(T, self), param }),
+                                else => @call(.{ .modifier = .always_inline }, callback, .{ @intToPtr(T, self).*, param })
                             }
                         }
                     }.cb,
