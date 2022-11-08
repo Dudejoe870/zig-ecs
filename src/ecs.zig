@@ -5,6 +5,7 @@ pub const EntityTraitsType = @import("ecs/entity.zig").EntityTraitsType;
 pub const ComponentStorage = @import("ecs/component_storage.zig").ComponentStorage;
 
 pub const Entity = @import("ecs/registry.zig").Entity;
+pub const Actor = @import("ecs/actor.zig").Actor;
 pub const Registry = @import("ecs/registry.zig").Registry;
 pub const BasicView = @import("ecs/views.zig").BasicView;
 pub const BasicMultiView = @import("ecs/views.zig").BasicMultiView;
