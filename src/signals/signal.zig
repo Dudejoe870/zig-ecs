@@ -79,7 +79,7 @@ test "Signal/Sink" {
 
     // bound listener
     var thing = Thing{};
-    sink.connectBound(&thing, "tester");
+    sink.connectBound(&thing, Thing.tester);
 
     signal.publish(666);
 
@@ -100,6 +100,6 @@ test "Sink Before null" {
     try std.testing.expectEqual(@as(usize, 1), signal.size());
 
     var thing = Thing{};
-    sink.before(null).connectBound(&thing, "tester");
+    sink.before(null).connectBound(&thing, Thing.tester);
     try std.testing.expectEqual(@as(usize, 2), signal.size());
 }

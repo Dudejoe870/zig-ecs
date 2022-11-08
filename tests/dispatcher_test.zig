@@ -29,11 +29,11 @@ test "Dispatcher" {
 
     var sink = d.sink(u32);
     sink.connect(tester);
-    sink.connectBound(&thing, "testU32");
+    sink.connectBound(&thing, Thing.testU32);
     d.trigger(u32, 666);
 
     var sink2 = d.sink(i32);
     sink2.connect(tester2);
-    sink2.connectBound(&thing, "testI32");
+    sink2.connectBound(&thing, Thing.testI32);
     d.trigger(i32, -543);
 }

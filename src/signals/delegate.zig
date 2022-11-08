@@ -12,8 +12,9 @@ pub fn Delegate(comptime Event: type) type {
         },
 
         /// sets a bound function as the Delegate callback
-        pub fn initBound(ctx: anytype, comptime fn_name: []const u8) Self {
+        pub fn initBound(ctx: anytype, comptime callback: anytype) Self {
             std.debug.assert(@typeInfo(@TypeOf(ctx)) == .Pointer);
+            std.debug.assert(@typeInfo(@TypeOf(callback)) == .Fn);
             std.debug.assert(@ptrToInt(ctx) != 0);
 
             const T = @TypeOf(ctx);
@@ -22,7 +23,11 @@ pub fn Delegate(comptime Event: type) type {
                 .callback = .{
                     .bound = struct {
                         fn cb(self: usize, param: Event) void {
-                            @call(.{ .modifier = .always_inline }, @field(@intToPtr(T, self), fn_name), .{param});
+                            switch (@typeInfo(@TypeOf(callback)).Fn.args[0].arg_type.?) {
+                                *T => @call(.{ .modifier = .always_inline }, callback, .{ @intToPtr(T, self), param }),
+                                T => @call(.{ .modifier = .always_inline }, callback, .{ @intToPtr(T, self).*, param }),
+                                else => @compileError("First argument has to be either a pointer to the type, or the type itself for bound Delegates.")
+                            }
                         }
                     }.cb,
                 },

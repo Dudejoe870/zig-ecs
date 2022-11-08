@@ -558,13 +558,13 @@ pub const Registry = struct {
         }
 
         // wire up our listeners
-        inline for (owned) |t| self.onConstruct(t).beforeBound(maybe_valid_if).connectBound(new_group_data, "maybeValidIf");
-        inline for (includes) |t| self.onConstruct(t).beforeBound(maybe_valid_if).connectBound(new_group_data, "maybeValidIf");
-        inline for (excludes) |t| self.onDestruct(t).beforeBound(maybe_valid_if).connectBound(new_group_data, "maybeValidIf");
+        inline for (owned) |t| self.onConstruct(t).beforeBound(maybe_valid_if).connectBound(new_group_data, GroupData.maybeValidIf);
+        inline for (includes) |t| self.onConstruct(t).beforeBound(maybe_valid_if).connectBound(new_group_data, GroupData.maybeValidIf);
+        inline for (excludes) |t| self.onDestruct(t).beforeBound(maybe_valid_if).connectBound(new_group_data, GroupData.maybeValidIf);
 
-        inline for (owned) |t| self.onDestruct(t).beforeBound(discard_if).connectBound(new_group_data, "discardIf");
-        inline for (includes) |t| self.onDestruct(t).beforeBound(discard_if).connectBound(new_group_data, "discardIf");
-        inline for (excludes) |t| self.onConstruct(t).beforeBound(discard_if).connectBound(new_group_data, "discardIf");
+        inline for (owned) |t| self.onDestruct(t).beforeBound(discard_if).connectBound(new_group_data, GroupData.discardIf);
+        inline for (includes) |t| self.onDestruct(t).beforeBound(discard_if).connectBound(new_group_data, GroupData.discardIf);
+        inline for (excludes) |t| self.onConstruct(t).beforeBound(discard_if).connectBound(new_group_data, GroupData.discardIf);
 
         // pre-fill the GroupData with any existing entitites that match
         if (owned.len == 0) {

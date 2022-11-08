@@ -41,9 +41,10 @@ pub fn Sink(comptime Event: type) type {
             _ = owning_signal.calls.insert(self.insert_index, Delegate(Event).initFree(callback)) catch unreachable;
         }
 
-        pub fn connectBound(self: Self, ctx: anytype, comptime fn_name: []const u8) void {
+        pub fn connectBound(self: Self, ctx: anytype, comptime callback: anytype) void {
             std.debug.assert(self.indexOfBound(ctx) == null);
-            _ = owning_signal.calls.insert(self.insert_index, Delegate(Event).initBound(ctx, fn_name)) catch unreachable;
+            std.debug.assert(@typeInfo(@TypeOf(callback)) == .Fn);
+            _ = owning_signal.calls.insert(self.insert_index, Delegate(Event).initBound(ctx, callback)) catch unreachable;
         }
 
         pub fn disconnect(self: Self, callback: *const fn (Event) void) void {
@@ -98,7 +99,7 @@ test "Sink Before free" {
     try std.testing.expectEqual(signal.sink().indexOf(tester).?, 0);
 
     var thing = Thing{};
-    signal.sink().before(tester).connectBound(&thing, "tester");
+    signal.sink().before(tester).connectBound(&thing, Thing.tester);
     try std.testing.expectEqual(signal.sink().indexOfBound(&thing).?, 0);
 }
 
@@ -107,7 +108,7 @@ test "Sink Before bound" {
     defer signal.deinit();
 
     var thing = Thing{};
-    signal.sink().connectBound(&thing, "tester");
+    signal.sink().connectBound(&thing, Thing.tester);
     try std.testing.expectEqual(signal.sink().indexOfBound(&thing).?, 0);
 
     signal.sink().beforeBound(&thing).connect(tester);
