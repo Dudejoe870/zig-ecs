@@ -78,14 +78,14 @@ pub fn link(b: *Builder, step: *std.build.LibExeObjStep, lib_type: LibType) void
     const build_mode = b.standardReleaseOptions();
     switch (lib_type) {
         .static => {
-            const lib = b.addStaticLibrary("ecs", "ecs.zig");
+            const lib = b.addStaticLibrary("ecs", libPath("/src/ecs.zig"));
             lib.setBuildMode(build_mode);
             lib.install();
 
             step.linkLibrary(lib);
         },
         .dynamic => {
-            const lib = b.addSharedLibrary("ecs", "ecs.zig", .unversioned);
+            const lib = b.addSharedLibrary("ecs", libPath("/src/ecs.zig"), .unversioned);
             lib.setBuildMode(build_mode);
             lib.install();
 
