@@ -33,7 +33,6 @@ pub fn SparseSet(comptime SparseT: type) type {
         }
 
         pub fn deinit(self: *Self) void {
-            self.sparse.expandToCapacity();
             for (self.sparse.items) |array| {
                 if (array) |arr| {
                     self.sparse.allocator.free(arr);
@@ -190,7 +189,6 @@ pub fn SparseSet(comptime SparseT: type) type {
         }
 
         pub fn clear(self: *Self) void {
-            self.sparse.expandToCapacity();
             for (self.sparse.items) |array, i| {
                 if (array) |arr| {
                     self.sparse.allocator.free(arr);
