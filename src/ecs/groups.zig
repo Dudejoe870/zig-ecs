@@ -200,7 +200,7 @@ pub const OwningGroup = struct {
         // optionally we could just use an Iterator here and pay for some slight indirection for code sharing
         var iter = self.iterator(Components);
         while (iter.next()) |comps| {
-            @call(.{ .modifier = .always_inline }, func, .{comps});
+            @call(.always_inline, func, .{comps});
         }
     }
 

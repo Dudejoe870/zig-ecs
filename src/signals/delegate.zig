@@ -17,7 +17,7 @@ pub fn Delegate(comptime Event: type) type {
 
             std.debug.assert(@typeInfo(@TypeOf(ctx)) == .Pointer);
             std.debug.assert(@typeInfo(@TypeOf(callback)) == .Fn);
-            std.debug.assert(@typeInfo(@TypeOf(callback)).Fn.args[0].arg_type.? == T);
+            std.debug.assert(@typeInfo(@TypeOf(callback)).Fn.params[0].type.? == T);
             std.debug.assert(@ptrToInt(ctx) != 0);
 
             return Self{
@@ -26,8 +26,8 @@ pub fn Delegate(comptime Event: type) type {
                     .bound = struct {
                         fn cb(self: usize, param: Event) void {
                             switch (@typeInfo(@typeInfo(@TypeOf(callback)).Fn.args[0].arg_type.?)) {
-                                .Pointer => @call(.{ .modifier = .always_inline }, callback, .{ @intToPtr(T, self), param }),
-                                else => @call(.{ .modifier = .always_inline }, callback, .{ @intToPtr(T, self).*, param })
+                                .Pointer => @call(.always_inline, callback, .{ @intToPtr(T, self), param }),
+                                else => @call(.always_inline, callback, .{ @intToPtr(T, self).*, param })
                             }
                         }
                     }.cb,
@@ -44,8 +44,8 @@ pub fn Delegate(comptime Event: type) type {
 
         pub fn trigger(self: Self, param: Event) void {
             switch (self.callback) {
-                .free => |func| @call(.{}, func, .{param}),
-                .bound => |func| @call(.{}, func, .{ self.ctx_ptr_address, param }),
+                .free => |func| @call(.auto, func, .{param}),
+                .bound => |func| @call(.auto, func, .{ self.ctx_ptr_address, param }),
             }
         }
 
