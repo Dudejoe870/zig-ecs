@@ -25,7 +25,7 @@ pub fn Delegate(comptime Event: type) type {
                 .callback = .{
                     .bound = struct {
                         fn cb(self: usize, param: Event) void {
-                            switch (@typeInfo(@typeInfo(@TypeOf(callback)).Fn.args[0].arg_type.?)) {
+                            switch (@typeInfo(@typeInfo(@TypeOf(callback)).Fn.params[0].type.?)) {
                                 .Pointer => @call(.always_inline, callback, .{ @intToPtr(T, self), param }),
                                 else => @call(.always_inline, callback, .{ @intToPtr(T, self).*, param })
                             }
